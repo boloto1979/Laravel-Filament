@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
-use App\Models\User;
+use App\Filament\Resources\RoleResource\Pages;
+use App\Filament\Resources\RoleResource\RelationManagers;
+use App\Models\Role;
 use Filament\Forms;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
@@ -13,11 +13,11 @@ use Filament\Tables;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class UserResource extends Resource
+class RoleResource extends Resource
 {
-    protected static ?string $model = User::class;
+    protected static ?string $model = Role::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static ?string $navigationIcon = 'heroicon-o-collection';
 
     public static function form(Form $form): Form
     {
@@ -27,19 +27,9 @@ class UserResource extends Resource
                 ->label(label:'Nome')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
-                    ->required()
-                    ->maxLength(255),
-                // Forms\Components\DateTimePicker::make('email_verified_at'),
-                Forms\Components\TextInput::make('password')
-                ->label(label:'Senha')
-                    ->password()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Select::make('roles')
+                Forms\Components\Select::make('permissions')
                     ->multiple()
-                    ->relationship('roles', 'name')
+                    ->relationship('permissions', 'name')
                     ->preload(),
             ]);
     }
@@ -49,38 +39,27 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                      ->label(label:'Nome'),
-                Tables\Columns\TextColumn::make('email'),
+                ->label(label:'Nome'),
                 Tables\Columns\TextColumn::make('created_at')
                 ->label(label:'Data de criação')
                     ->dateTime(format:'d/m/y H:i:s'),
-                // Tables\Columns\TextColumn::make('updated_at')
-                //     ->dateTime(),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
     
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-    
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => Pages\ManageRoles::route('/'),
         ];
     }    
 }
